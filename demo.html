@@ -1,0 +1,243 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1200" />
+  <title>Frontend Assignment — Demo (Interactive)</title>
+  <style>
+    :root{
+      --page-width:1200px;
+      --muted:#6b7280;
+      --card:#fff;
+      --accent:#0f172a;
+      --primary:#0f172a;
+      --soft:#f3f4f6;
+    }
+    * { box-sizing: border-box; }
+    body{font-family:Inter, system-ui, -apple-system, Arial, Helvetica, sans-serif;margin:0;background:#f8fafc;color:#0f172a; -webkit-font-smoothing:antialiased;}
+    .wrap{width:var(--page-width);margin:36px auto;padding:20px}
+    .header{display:flex;justify-content:space-between;align-items:center;opacity:0;transform:translateY(-6px);animation:enter .35s forwards .05s}
+    .header h2{margin:0;font-size:20px}
+    .muted{color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:28px;margin-top:24px}
+    .card{background:var(--card);border:1px solid #e6e6e6;padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04);transition:transform .18s ease, box-shadow .18s ease}
+    .card:focus-within, .card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(15,23,42,0.06)}
+    .org-list{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+    .org-item{opacity:0;transform:translateY(6px);animation:enter .35s forwards}
+    .org-name{font-weight:600;font-size:16px}
+    .org-email{color:var(--muted);font-size:13px}
+    .controls{margin-top:14px;display:flex;gap:8px}
+    .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-size:13px;transition:transform .12s ease, box-shadow .12s ease}
+    .btn:active{transform:translateY(1px)}
+    .btn:focus{outline:3px solid rgba(15,23,42,0.12); outline-offset:3px}
+    .btn-primary{background:var(--primary);color:#fff;box-shadow:0 6px 14px rgba(15,23,42,0.06)}
+    .btn-ghost{background:#fff;border:1px solid #e6e6e6}
+    .blocks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px;opacity:0;transform:translateY(6px);animation:enter .35s forwards .08s}
+    .box{padding:18px;border-radius:12px;border:1px solid #e6e6e6;background:#fff}
+    form label{display:block;margin-top:12px;font-size:13px}
+    input[type="email"], input[type="password"]{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-top:6px}
+    .footer{margin-top:34px;display:flex;justify-content:space-between;color:var(--muted);font-size:13px;opacity:0;transform:translateY(6px);animation:enter .35s forwards .12s}
+    .links a{color:var(--muted);text-decoration:none;padding:6px;border-radius:6px;transition:background .15s, color .15s}
+    .links a:hover, .links a:focus{background:#eef2ff;color:var(--primary);outline:none}
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .18s, visibility .18s}
+    .modal-backdrop.show{opacity:1;visibility:visible}
+    .modal{background:#fff;padding:20px;border-radius:12px;max-width:520px;width:92%;box-shadow:0 20px 60px rgba(2,6,23,0.2);transform:translateY(10px);transition:transform .18s}
+    .modal-backdrop.show .modal{transform:translateY(0)}
+    .fade-out{animation:fadeOut .28s forwards}
+    /* small desktop only hint */
+    @media (max-width:1100px){ .wrap{width:95%} .grid{grid-template-columns:1fr} }
+    /* Animations */
+    @keyframes enter { to { opacity:1; transform:none; } }
+    @keyframes fadeOut { to { opacity:0; transform:translateY(-8px); height:0; margin:0; padding:0 } }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main" aria-labelledby="title">
+    <header class="header" role="banner">
+      <div>
+        <h2 id="title">Frontend Assignment</h2>
+        <div class="muted">Desktop UI</div>
+      </div>
+      <nav class="links" aria-label="Top navigation">
+        <a href="#" tabindex="0">Docs</a>
+        <a href="#" tabindex="0">Repo</a>
+      </nav>
+    </header>
+
+    <section class="grid" aria-label="Main section">
+      <div>
+        <h3 style="margin:0;font-size:18px;opacity:0;transform:translateY(6px);animation:enter .35s forwards .03s">Organization Management</h3>
+        <p class="muted" style="max-width:780px;margin-top:8px;opacity:0;transform:translateY(6px);animation:enter .35s forwards .04s">Create and manage organizations and admin users. This demo is a static representation of the app UI for your assignment.</p>
+
+        <div class="org-list" aria-live="polite" id="orgList">
+          <article class="card org-item" data-name="Sample Org">
+            <div class="org-name">Sample Org</div>
+            <div class="org-email">admin@sample.com</div>
+            <div class="controls">
+              <button class="btn btn-primary open-btn" aria-label="Open Sample Org">Open</button>
+              <button class="btn btn-ghost delete-btn" aria-label="Delete Sample Org">Delete</button>
+            </div>
+          </article>
+
+          <article class="card org-item" data-name="Another Org">
+            <div class="org-name">Another Org</div>
+            <div class="org-email">team@org.com</div>
+            <div class="controls">
+              <button class="btn btn-primary open-btn" aria-label="Open Another Org">Open</button>
+              <button class="btn btn-ghost delete-btn" aria-label="Delete Another Org">Delete</button>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <aside>
+        <form class="card" id="loginForm" aria-label="Admin sign in" onsubmit="return false">
+          <div style="font-weight:600;font-size:16px">Admin Login</div>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="admin@example.com" aria-required="true" />
+
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" required placeholder="••••••••" aria-required="true" />
+
+          <div id="loginMsg" role="status" style="margin-top:10px;min-height:18px;color:green;font-size:13px"></div>
+
+          <div style="margin-top:14px;display:flex;gap:10px">
+            <button class="btn btn-primary" id="signInBtn" type="button">Sign in</button>
+            <button class="btn btn-ghost" id="forgotBtn" type="button">Forgot?</button>
+          </div>
+        </form>
+      </aside>
+    </section>
+
+    <section class="blocks" aria-label="Additional blocks">
+      <div class="box">Stats / Charts</div>
+      <div class="box">Recent Activity</div>
+      <div class="box">Settings</div>
+    </section>
+
+    <footer class="footer" role="contentinfo">
+      <div>Frontend Assignment</div>
+      <div>© <span id="yr"></span></div>
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Organization</h3>
+      <div id="modalBody" style="margin-top:8px;font-size:14px;color:var(--muted)"></div>
+      <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">
+        <button class="btn btn-ghost" id="modalClose">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Accessibility helpers
+    function trapFocus(container) {
+      const focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      function handle(e) {
+        if (e.key === 'Tab') {
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault(); last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault(); first.focus();
+          }
+        } else if (e.key === 'Escape') {
+          hideModal();
+        }
+      }
+      container.addEventListener('keydown', handle);
+      return () => container.removeEventListener('keydown', handle);
+    }
+
+    // Modal logic
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    const modalBody = document.getElementById('modalBody');
+    const modalClose = document.getElementById('modalClose');
+    let releaseTrap = null;
+
+    function showModal(title, content) {
+      document.getElementById('modalTitle').textContent = title;
+      modalBody.textContent = content;
+      modalBackdrop.classList.add('show');
+      modalBackdrop.setAttribute('aria-hidden','false');
+      releaseTrap = trapFocus(modalBackdrop);
+      // focus first focusable inside modal
+      setTimeout(()=> modalClose.focus(), 50);
+    }
+    function hideModal(){
+      modalBackdrop.classList.remove('show');
+      modalBackdrop.setAttribute('aria-hidden','true');
+      if (releaseTrap) releaseTrap();
+    }
+    modalBackdrop.addEventListener('click', (e)=> { if (e.target === modalBackdrop) hideModal(); });
+    modalClose.addEventListener('click', hideModal);
+
+    // Open / Delete actions
+    document.querySelectorAll('.open-btn').forEach(b=>{
+      b.addEventListener('click', (e)=>{
+        const item = e.target.closest('.org-item');
+        const name = item?.dataset?.name || 'Organization';
+        showModal(name, 'This is a demo modal for ' + name + '. You can display organization metadata, actions, or links here.');
+      });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(b=>{
+      b.addEventListener('click', (e)=>{
+        const item = e.target.closest('.org-item');
+        const name = item?.dataset?.name || 'Organization';
+        if (!confirm('Delete "' + name + '"? This action only removes it from the UI.')) return;
+        // animate out then remove
+        item.classList.add('fade-out');
+        setTimeout(()=> { item.remove(); }, 280);
+      });
+    });
+
+    // Sign in — client-only demo
+    const signInBtn = document.getElementById('signInBtn');
+    const forgotBtn = document.getElementById('forgotBtn');
+    const loginMsg = document.getElementById('loginMsg');
+
+    signInBtn.addEventListener('click', ()=>{
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      loginMsg.style.color = 'green';
+      if (!email || !pass) { loginMsg.style.color = 'crimson'; loginMsg.textContent = 'Enter both email and password.'; return; }
+      // fake auth: store token in localStorage
+      const token = btoa(email + ':' + Date.now());
+      localStorage.setItem('demo_token', token);
+      loginMsg.style.color = 'green';
+      loginMsg.textContent = 'Signed in (demo). Token saved to localStorage.';
+      // small success animation
+      signInBtn.textContent = 'Done';
+      setTimeout(()=> signInBtn.textContent = 'Sign in', 1200);
+    });
+
+    forgotBtn.addEventListener('click', ()=> {
+      const email = document.getElementById('email').value.trim();
+      if (email) {
+        alert('Password reset link would be sent to: ' + email + ' (demo only)');
+      } else {
+        alert('Enter your admin email to receive a reset link (demo).');
+      }
+    });
+
+    // small keyboard accessible focus for links
+    document.querySelectorAll('.links a').forEach(a=>{
+      a.addEventListener('keydown', (e)=> { if (e.key === 'Enter') a.click(); });
+    });
+
+    // entrance delay for org items (stagger)
+    document.querySelectorAll('.org-item').forEach((el,i)=> el.style.animationDelay = (0.06 + i*0.04) + 's');
+
+    // init year
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
